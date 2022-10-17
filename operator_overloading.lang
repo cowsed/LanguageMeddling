@@ -1,0 +1,20 @@
+func double(a int) int {
+    return a * 2
+}
+func triple(a int) int{
+    return a * 3
+}
+
+
+//registers an operator overload for left side func(int)int right side func(int)int
+func __add__(f1 func(int)int, f2 func(int)int) func(int)int{
+    return func(a int)int{
+        return f1(a) + f2(b)
+    }
+}
+
+var fancy func(int)int = double + triple
+//fancy is now equivalent to 
+//func fancy(a int)int{
+//    return double(a) + triple(a)
+//}
