@@ -23,13 +23,13 @@ const arr vec<int> = [1 2 3 4 5] //compiler will yell at you if you try to assig
 
 ```go
 print a
-print (a "on the left, on the right" b)
+print <a "on the left, on the right" b>
 ```
 
 ### return
 ```go
 return a
-return (a b c)
+return <a b c>
 ```
 
 ### assignment

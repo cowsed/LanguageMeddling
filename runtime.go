@@ -9,10 +9,11 @@ import (
 type ValueType int
 
 const (
-	Nothing ValueType = iota
+	NoType ValueType = iota
 	Bool
 	Int
 	Float
+	String
 	Vector
 	Tuple
 	Function
@@ -21,7 +22,7 @@ const (
 
 func (v ValueType) String() string {
 	if v < LastBuiltinType {
-		return []string{"nothing", "bool", "int", "float", "vector", "tuple", "function", "nothing2"}[v]
+		return []string{"nothing", "bool", "int", "float", "vector", "tuple", "function", "LastKnownType"}[v]
 	}
 	return "User defined type"
 }
@@ -72,6 +73,20 @@ var _ ASTNode = &PrintStatement{&IntLiteral{2}}
 var _ ASTNode = &AddIntNode{}
 var _ ASTNode = &TupleLiteral{}
 var _ ASTNode = &AddAnyNode{}
+var _ ASTNode = &DeclareNode{}
+
+type DeclareNode struct {
+	name    string
+	my_type ValueType
+}
+
+func (dn *DeclareNode) Execute(r *Runtime) {
+	r.StackTop().variables[dn.name] = nil
+}
+
+func (*DeclareNode) ReturnsType(r *Runtime) ValueType {
+	return NoType
+}
 
 type SetNode struct {
 	to      string
@@ -156,7 +171,7 @@ func (aan *AddAnyNode) ReturnsType(r *Runtime) ValueType {
 	operation, operation_exists := r.unary_operator_overloads[[2]ValueType{aan.left.ReturnsType(r), aan.right.ReturnsType(r)}]
 	if !operation_exists {
 		// no corresponding operation defined
-		return Nothing
+		return NoType
 	}
 	return operation.ret_type
 }
@@ -275,7 +290,7 @@ func print_tuple(t *TupleType) {
 }
 
 func (*PrintStatement) ReturnsType(r *Runtime) ValueType {
-	return Nothing
+	return NoType
 }
 
 type FunctionDefinition struct {
